@@ -77,7 +77,8 @@
 // }
 
 // func main() {
-// 	img := image.NewRGBA(image.Rect(0, 0, 300, 100))
+// 	img := image.NewRGBA(image.Rect(0, 0, 1200, 630))
+
 // 	addLabel(img, 20, 30, "Hello Go")
 
 // 	f, err := os.Create("hello-go.png")
@@ -89,100 +90,189 @@
 // 		panic(err)
 // 	}
 // }
-
-// import (
-// 	"log"
-
-// 	"github.com/fogleman/gg"
-// )
-
-// func main() {
-// 	const S = 1024
-// 	im, err := gg.LoadImage(`C:/Users/vggarcia/go/src/cup-simulator/src.jpg`)
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-
-// 	dc := gg.NewContext(S, S)
-// 	dc.SetRGB(1, 1, 1)
-// 	dc.Clear()
-// 	dc.SetRGB(0, 0, 0)
-// 	if err := dc.LoadFontFace(`C:/Users/vggarcia/go/src/cup-simulator/Roboto-Black.ttf`, 30); err != nil {
-// 		panic(err)
-// 	}
-// 	dc.DrawStringAnchored("Hello, world!", S/2, S/2, 0.5, 0.5)
-
-// 	dc.DrawRoundedRectangle(0, 0, 512, 512, 0)
-// 	dc.DrawImage(im, 0, 0)
-// 	dc.DrawStringAnchored("Grupo A", S/8, S/3, 0.5, 0.5)
-// 	//dc.DrawStringAnchored("BRASIL", S/7, S/3, 0.5, 0.5)
-
-// 	dc.DrawStringAnchored("Grupo B", S/2, S/3, 0.5, 0.5)
-// 	//dc.DrawStringAnchored("ALEMANHA", S/1, S/3, 0.5, 0.5)
-
-// 	dc.DrawStringAnchored("Grupo C", S/2, S/3, 0.5, 0.5)
-// 	//dc.DrawStringAnchored("RUSSIA", S/2, S/3, 0.5, 0.5)
-
-// 	//dc.DrawStringAnchored("Grupo D", S/7, S/3, 0.5, 0.5)
-
-// 	// dc.DrawStringAnchored("Grupo E", S/7, S/3, 0.5, 0.5)
-
-// 	// dc.DrawStringAnchored("Grupo F", S/7, S/3, 0.5, 0.5)
-
-// 	// dc.DrawStringAnchored("Grupo G", S/7, S/3, 0.5, 0.5)
-
-// 	// dc.DrawStringAnchored("Grupo H", S/7, S/3, 0.5, 0.5)
-
-// 	dc.Clip()
-// 	dc.SavePNG("out.png")
-// }
-
 package main
 
 import (
-	"fmt"
-	"image"
-	"image/color"
-	"image/draw"
-	"image/jpeg"
-	"os"
+	"log"
+
+	"github.com/fogleman/gg"
 )
+type mapxy struct{
+	x float64
+	y float64
+}
+ 
 
 func main() {
 
-	fBg, err := os.Open(`C:/Users/vggarcia/go/src/cup-simulator/src.jpg`)
-	defer fBg.Close()
-	bg, _, err := image.Decode(fBg)
-
-	fSrc, err := os.Open("arrow1.jpg")
-	defer fSrc.Close()
-	src, _, err := image.Decode(fSrc)
-
-	fMaskImg, err := os.Open("mask.jpg")
-	defer fMaskImg.Close()
-	maskImg, _, err := image.Decode(fMaskImg)
-
-	bounds := src.Bounds() //you have defined that both src and mask are same size, and maskImg is a grayscale of the src image. So we'll use that common size.
-	mask := image.NewAlpha(bounds)
-	for x := 0; x < bounds.Dx(); x++ {
-		for y := 0; y < bounds.Dy(); y++ {
-			//get one of r, g, b on the mask image ...
-			r, _, _, _ := maskImg.At(x, y).RGBA()
-			//... and set it as the alpha value on the mask.
-			mask.SetAlpha(x, y, color.Alpha{uint8(255 - r)}) //Assuming that white is your transparency, subtract it from 255
+	mapv := []mapxy{
+		{x : 0, y: 0,},
+		{
+			x : 0,
+			y : 100,
+		},
+		{
+			x: 0,
+			y: 200,
+		},
+		{
+			x: 0,
+			y: 300,
+		},
+		{
+			x: 100,
+			y: 0,
+		},
+		{
+			x: 100,
+			y: 100,
+		},
+		{
+			x: 100,
+			y: 200,
+		},
+		{
+			x: 100,
+			y: 300,
 		}
+		
 	}
 
-	m := image.NewRGBA(bounds)
-	draw.Draw(m, m.Bounds(), bg, image.ZP, draw.Src)
-
-	draw.DrawMask(m, bounds, src, image.ZP, mask, image.ZP, draw.Over)
-
-	toimg, _ := os.Create("new.jpeg")
-	defer toimg.Close()
-
-	err = jpeg.Encode(toimg, m, nil)
+	const X = 1200
+	const Y = 1200
+	im, err := gg.LoadImage(`C:\Users\vggarcia\go\src\generate-image\cup-simulator\src.jpg`)
 	if err != nil {
-		fmt.Println("Error: " + err.Error())
+		log.Fatal(err)
 	}
+
+	dc := gg.NewContext(X, Y)
+	dc.SetRGB(1, 1, 1)
+	dc.Clear()
+	dc.SetRGB(0, 0, 0)
+	if err := dc.LoadFontFace(`C:\Users\vggarcia\go\src\generate-image\cup-simulator\Roboto-Black.ttf`, 30); err != nil {
+		panic(err)
+	}
+
+	dc.DrawRoundedRectangle(0, 0, 512, 512, 0)
+	dc.DrawImage(im, 0, 0)
+	dc.DrawStringAnchored("Hello, world!", 200, 200, 0.5, 0.5)
+	dc.DrawStringAnchored("Grupo A", 80, 80, 0.5, 0.5)
+	dc.DrawStringAnchored("BRASIL", 50, 50, 0.5, 0.5)
+
+	// dc.DrawStringAnchored("Grupo B", S/2, S/3, 0.5, 0.5)
+	// //dc.DrawStringAnchored("ALEMANHA", S/1, S/3, 0.5, 0.5)
+
+	// dc.DrawStringAnchored("Grupo C", S/2, S/3, 0.5, 0.5)
+	//dc.DrawStringAnchored("RUSSIA", S/2, S/3, 0.5, 0.5)
+
+	//dc.DrawStringAnchored("Grupo D", S/7, S/3, 0.5, 0.5)
+
+	// dc.DrawStringAnchored("Grupo E", S/7, S/3, 0.5, 0.5)
+
+	// dc.DrawStringAnchored("Grupo F", S/7, S/3, 0.5, 0.5)
+
+	// dc.DrawStringAnchored("Grupo G", S/7, S/3, 0.5, 0.5)
+
+	// dc.DrawStringAnchored("Grupo H", S/7, S/3, 0.5, 0.5)
+
+	dc.Clip()
+	dc.SavePNG("out.png")
 }
+
+// package main
+
+// import (
+// 	"fmt"
+// 	"image"
+// )
+
+// func main() {
+
+// 	r := image.Rect(2, 1, 5, 5)
+// 	// Dx and Dy return a rectangle's width and height.
+
+// 	r.DrawStringAnchored
+// 	fmt.Println(r.Dx(), r.Dy(), image.Pt(0, 0).In(r)) // prints 3 4 false
+// }
+
+// package main
+
+// import (
+// 	"fmt"
+// 	"image"
+// 	"image/color"
+// 	"image/jpeg"
+// 	"image/png"
+// 	"os"
+
+// 	"golang.org/x/image/font"
+// 	"golang.org/x/image/font/basicfont"
+// 	"golang.org/x/image/math/fixed"
+// )
+
+// func init() {
+// 	// damn important or else At(), Bounds() functions will
+// 	// caused memory pointer error!!
+// 	image.RegisterFormat("jpeg", "jpeg", jpeg.Decode, jpeg.DecodeConfig)
+// }
+
+// func main() {
+// 	imgfile, err := os.Open(`C:\Users\vggarcia\go\src\generate-image\cup-simulator\src.jpg`)
+
+// 	if err != nil {
+// 		fmt.Println("img.jpg file not found!")
+// 		os.Exit(1)
+// 	}
+
+// 	defer imgfile.Close()
+
+// 	// get image height and width with image/jpeg
+// 	// change accordinly if file is png or gif
+
+// 	imgCfg, _, err := image.DecodeConfig(imgfile)
+
+// 	if err != nil {
+// 		fmt.Println(err)
+// 		os.Exit(1)
+// 	}
+
+// 	width := imgCfg.Width
+// 	height := imgCfg.Height
+
+// 	fmt.Println("Width : ", width)
+// 	fmt.Println("Height : ", height)
+
+// 	// we need to reset the io.Reader again for image.Decode() function below to work
+// 	// otherwise we will  - panic: runtime error: invalid memory address or nil pointer dereference
+// 	// there is no build in rewind for io.Reader, use Seek(0,0)
+// 	imgfile.Seek(0, 0)
+
+// 	// get the image
+// 	img, _, err := image.Decode(imgfile)
+// 	b := img.Bounds()
+// 	imgSet := image.NewRGBA(b)
+// 	addLabel(imgSet, 20, 30, "Hello Go")
+
+// 	f, err := os.Create("hello-goss.png")
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	defer f.Close()
+// 	if err := png.Encode(f, img); err != nil {
+// 		panic(err)
+// 	}
+
+// }
+// func addLabel(img *image.RGBA, x, y int, label string) {
+
+// 	col := color.RGBA{0xdd, 0x00, 0x93, 0xff}
+// 	point := fixed.Point26_6{fixed.Int26_6(x * 64), fixed.Int26_6(y * 64)}
+
+// 	d := &font.Drawer{
+// 		Dst:  img,
+// 		Src:  image.NewUniform(col),
+// 		Face: basicfont.Face7x13,
+// 		Dot:  point,
+// 	}
+// 	d.DrawString(label)
+// }
