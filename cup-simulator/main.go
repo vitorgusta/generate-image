@@ -13,8 +13,10 @@ import (
 )
 
 type mapxy struct {
-	x float64
-	y float64
+	x      float64
+	y      float64
+	imageX int
+	imageY int
 }
 
 type Groups struct {
@@ -36,21 +38,20 @@ func main() {
 	e.Server.Addr = ":" + *port
 
 	r := e.Group("/api/v1")
-	r.POST("/something", generateTemplate)
+	r.POST("/generateTemplate", generateTemplate)
 
 	graceful.ListenAndServe(e.Server, 5*time.Second)
 }
 
+//Metodo que gera a imagem e retorna o caminho onde ela foi salca
 func generateTemplate(c echo.Context) (err error) {
 
-	groups1 := new(Groups)
+	groups := new(Groups)
 
-	if err := c.Bind(groups1); err != nil {
+	if err := c.Bind(groups); err != nil {
 		return c.JSON(http.StatusForbidden, err)
 	}
-
-	img := generateImage(*groups1)
-	fmt.Println("JSON", groups1)
+	img := generateImage(*groups)
 
 	return c.JSON(http.StatusCreated, img)
 }
@@ -59,41 +60,59 @@ func generateImage(groups Groups) string {
 	var basenameOpts []mapxy
 	basenameOpts = []mapxy{
 		mapxy{
-			x: 150,
-			y: 230,
+			x:      125,
+			y:      230,
+			imageX: 88,
+			imageY: 215,
 		},
 		mapxy{
-			x: 0,
-			y: 100,
+			x:      410,
+			y:      230,
+			imageX: 375,
+			imageY: 215,
 		},
 		mapxy{
-			x: 0,
-			y: 200,
+			x:      700,
+			y:      230,
+			imageX: 665,
+			imageY: 215,
 		},
 		mapxy{
-			x: 0,
-			y: 300,
+			x:      990,
+			y:      230,
+			imageX: 955,
+			imageY: 215,
 		},
 		mapxy{
-			x: 100,
-			y: 0,
+			x:      125,
+			y:      400,
+			imageX: 88,
+			imageY: 386,
 		},
 		mapxy{
-			x: 100,
-			y: 100,
+			x:      410,
+			y:      400,
+			imageX: 375,
+			imageY: 386,
 		},
 		mapxy{
-			x: 100,
-			y: 200,
+			x:      700,
+			y:      400,
+			imageX: 665,
+			imageY: 386,
 		},
 		mapxy{
-			x: 100,
-			y: 300,
+			x:      990,
+			y:      400,
+			imageX: 955,
+			imageY: 386,
 		},
 	}
+
 	const X = 1200
 	const Y = 630
-	im, err := gg.LoadImage(`/Users/vitorlevy/Documents/generate-image/cup-simulator/Esporte_Simulador_Copa_compartilhamento.png`)
+	//carrega a imagem de background
+	im, err := gg.LoadImage(`C:\Users\vggarcia\go\src\generate-image\cup-simulator\Esporte_Simulador_Copa_compartilhamento.png`)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -102,21 +121,30 @@ func generateImage(groups Groups) string {
 	dc.SetRGB(1, 1, 1)
 	dc.Clear()
 	dc.SetRGB(0, 0, 0)
-	if err := dc.LoadFontFace(`/Users/vitorlevy/Documents/generate-image/cup-simulator/FiraSans-Medium.ttf`, 30); err != nil {
+	//seta o a fonte que vai ser usada nos nomes dos times
+	if err := dc.LoadFontFace(`C:\Users\vggarcia\go\src\generate-image\cup-simulator\FiraSans-BlackItalic.ttf`, 16); err != nil {
 		panic(err)
 	}
 
 	dc.DrawRoundedRectangle(0, 0, 512, 512, 0)
 	dc.DrawImage(im, 0, 0)
+	//seta a cor do texto
+	dc.SetHexColor("#FFFFFF")
 
-	fmt.Println(basenameOpts)
+	//percorre o objeto com os times seta as imagens e os nomes no template
 	for i, group := range groups.Groups {
 		for _, time := range group {
-			fmt.Println("vitor", i, time.Image, time.Image)
-			dc.DrawStringAnchored(time.Name, 250, 330, 0.5, 0.5)
+			slug, _ := gg.LoadImage("C:/Users/vggarcia/go/src/generate-image/cup-simulator/Bandeiras/" + time.Name + ".png")
+			dc.DrawImage(slug, int(basenameOpts[i].imageX), int(basenameOpts[i].imageY))
+			dc.DrawString(time.Name, basenameOpts[i].x, basenameOpts[i].y)
+			basenameOpts[i].imageY = basenameOpts[i].imageY + 40
+			basenameOpts[i].y = basenameOpts[i].y + 40
 		}
 	}
+
+	time := time.Now()
+	fmt.Println("sas", time.UTC())
 	dc.Clip()
-	dc.SavePNG("out1.png")
-	return "umg"
+	dc.SavePNG("C:/Users/vggarcia/go/src/generate-image/cup-simulator/copadomundo2018.png")
+	return "copadomundo2018.png"
 }
