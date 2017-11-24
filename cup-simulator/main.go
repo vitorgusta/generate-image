@@ -9,6 +9,7 @@ import (
 
 	"github.com/fogleman/gg"
 	"github.com/labstack/echo"
+	uuid "github.com/satori/go.uuid"
 	"github.com/tylerb/graceful"
 )
 
@@ -134,7 +135,7 @@ func generateImage(groups Groups) string {
 	//percorre o objeto com os times seta as imagens e os nomes no template
 	for i, group := range groups.Groups {
 		for _, time := range group {
-			slug, _ := gg.LoadImage("C:/Users/vggarcia/go/src/generate-image/cup-simulator/Bandeiras/" + time.Name + ".png")
+			slug, _ := gg.LoadImage("C:/Users/vggarcia/go/src/generate-image/cup-simulator/Bandeiras/" + "franca" + ".png")
 			dc.DrawImage(slug, int(basenameOpts[i].imageX), int(basenameOpts[i].imageY))
 			dc.DrawString(time.Name, basenameOpts[i].x, basenameOpts[i].y)
 			basenameOpts[i].imageY = basenameOpts[i].imageY + 40
@@ -142,9 +143,10 @@ func generateImage(groups Groups) string {
 		}
 	}
 
-	time := time.Now()
-	fmt.Println("sas", time.UTC())
+	u1 := uuid.NewV4()
+	fmt.Println(u1)
+
 	dc.Clip()
-	dc.SavePNG("C:/Users/vggarcia/go/src/generate-image/cup-simulator/copadomundo2018.png")
-	return "copadomundo2018.png"
+	dc.SavePNG("//bandeirantes.com.br/webcontent/Portal_Band/S_Apiportal/Images/simulador-copa-do-mundo/copadomundo2018-" + u1.String() + ".png")
+	return "//bandeirantes.com.br/webcontent/Portal_Band/S_Apiportal/Images/simulador-copa-do-mundo/copadomundo2018-" + u1.String() + ".png"
 }
