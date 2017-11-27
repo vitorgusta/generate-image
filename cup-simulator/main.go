@@ -113,7 +113,7 @@ func generateImage(groups Groups) string {
 	const X = 1200
 	const Y = 630
 	//carrega a imagem de background
-	im, err := gg.LoadImage(`C:\Users\vggarcia\go\src\generate-image\cup-simulator\Esporte_Simulador_Copa_compartilhamento.png`)
+	im, err := gg.LoadImage("./Esporte_Simulador_Copa_compartilhamento.png")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -123,7 +123,7 @@ func generateImage(groups Groups) string {
 	dc.Clear()
 	dc.SetRGB(0, 0, 0)
 	//seta o a fonte que vai ser usada nos nomes dos times
-	if err := dc.LoadFontFace(`C:\Users\vggarcia\go\src\generate-image\cup-simulator\FiraSans-BlackItalic.ttf`, 16); err != nil {
+	if err := dc.LoadFontFace("./FiraSans-BlackItalic.ttf", 16); err != nil {
 		panic(err)
 	}
 
@@ -135,7 +135,7 @@ func generateImage(groups Groups) string {
 	//percorre o objeto com os times seta as imagens e os nomes no template
 	for i, group := range groups.Groups {
 		for _, time := range group {
-			slug, _ := gg.LoadImage("C:/Users/vggarcia/go/src/generate-image/cup-simulator/Bandeiras/" + "franca" + ".png")
+			slug, _ := gg.LoadImage("//bandeirantes.com.br/webcontent/Sites_Old/S_Esporte/futebol/copa2018/simulador/images/Bandeiras/" + time.Image)
 			dc.DrawImage(slug, int(basenameOpts[i].imageX), int(basenameOpts[i].imageY))
 			dc.DrawString(time.Name, basenameOpts[i].x, basenameOpts[i].y)
 			basenameOpts[i].imageY = basenameOpts[i].imageY + 40
@@ -147,6 +147,6 @@ func generateImage(groups Groups) string {
 	fmt.Println(u1)
 
 	dc.Clip()
-	dc.SavePNG("//bandeirantes.com.br/webcontent/Portal_Band/S_Apiportal/Images/simulador-copa-do-mundo/copadomundo2018-" + u1.String() + ".png")
-	return "//bandeirantes.com.br/webcontent/Portal_Band/S_Apiportal/Images/simulador-copa-do-mundo/copadomundo2018-" + u1.String() + ".png"
+	dc.SavePNG("//bandeirantes.com.br/webcontent/Sites_Old/S_Esporte/futebol/copa2018/simulador/images/timesheets/" + u1.String() + ".png")
+	return u1.String() + ".png"
 }
