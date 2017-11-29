@@ -8,7 +8,9 @@ import (
 	"time"
 
 	"github.com/fogleman/gg"
+	fb "github.com/huandu/facebook"
 	"github.com/labstack/echo"
+	"github.com/labstack/echo/middleware"
 	uuid "github.com/satori/go.uuid"
 	"github.com/tylerb/graceful"
 )
@@ -36,8 +38,14 @@ func main() {
 	log.Printf("Starting Rest API service on port %s\n", *port)
 
 	e := echo.New()
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
 	e.Server.Addr = ":" + *port
 
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"*"},
+		AllowMethods: []string{echo.GET, echo.PUT, echo.POST, echo.HEAD},
+	}))
 	r := e.Group("/api/v1")
 	r.POST("/generateTemplate", generateTemplate)
 
@@ -46,7 +54,6 @@ func main() {
 
 //Metodo que gera a imagem e retorna o caminho onde ela foi salca
 func generateTemplate(c echo.Context) (err error) {
-
 	groups := new(Groups)
 
 	if err := c.Bind(groups); err != nil {
@@ -144,9 +151,27 @@ func generateImage(groups Groups) string {
 	}
 
 	u1 := uuid.NewV4()
-	fmt.Println(u1)
 
 	dc.Clip()
 	dc.SavePNG("//bandeirantes.com.br/webcontent/Sites_Old/S_Esporte/futebol/copa2018/simulador/images/timesheets/" + u1.String() + ".png")
+	sharedImageFacebook(u1.String())
+
 	return u1.String() + ".png"
+}
+
+func sharedImageFacebook(u1 string) {
+	imageFacebook := "http://esporte.band.uol.com.br/futebol/copa2018/simulador/images/timesheets/" + u1 + ".png"
+	res, e := fb.Post("/me/feed", fb.Params{
+		"type":         "link",
+		"name":         "test news is here",
+		"caption":      "The caption of a link in the post ",
+		"picture":      imageFacebook,
+		"link":         imageFacebook,
+		"description":  "Simulador Copa 2018",
+		"access_token": "EAAAATkB4Tx4BANfmFZC2Ti3bNjaZA5TbGrE9hL4vOExkCA6KExcKwTgUZBPZCL9E6sCvGpdlZAfQI0u5ZAixDqxa15feDzRoxZAE0CfEbk0hfDbyY2A6JijP758Pr0ANDZC7QqNQJexGcXzhOkDFhRDHg3mhix2NoE3pHiaCzggleQZDZD",
+	})
+
+	if e != nil {
+		fmt.Println("Erro ao postar no Facebook.", res)
+	}
 }
